@@ -1,0 +1,57 @@
+# Created by https://www.toptal.com/developers/gitignore/api/c++,visualstudiocode,platformio
+# Edit at https://www.toptal.com/developers/gitignore?templates=c++,visualstudiocode,platformio
+
+### C++ ###
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+### PlatformIO ###
+# PlatformIO Core Call Speed Test
+# https://github.com/platformio/platformio-core/issues/1531
+.pio/
+.clang_complete
+.cproject
+.project
+.settings/
+lib/
+lib_ext/
+
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# End of https://www.toptal.com/developers/gitignore/api/c++,visualstudiocode,platformio
