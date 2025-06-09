@@ -1,109 +1,130 @@
-IoT-Based Intelligent Waste Management System
+# IoT-Based Intelligent Waste Management System
+
 This is the official repository for the XJTLU SURF 2025 project on developing an intelligent waste management system. This system uses an ESP32 microcontroller and sensors to monitor waste levels and gas emissions, sending data to a user-friendly web interface.
 
-Team Members
-Name	Role
-Yuexin Li	Hardware Specialist
-Zhongyi Wang	Hardware Specialist
-Jiayi Hu	Embedded Systems Lead
-Zihan Ni	API & Embedded Integration Lead
-Cleon Harada	Data & Frontend Developer
-Tingyuan Shao	Data & Frontend Developer
-Junyue Huang	Frontend Lead
-Zhiheng Liu	Project Integrator & QA Lead
-Karim Moussa	Principal Investigator / Supervisor
+## Team Members
 
-Export to Sheets
-Project Overview
-This project develops a simple, smart waste monitoring system using everyday technology. We built a device that measures how full a bin is and detects methane gas, a harmful byproduct of trash. This information is sent wirelessly to a website, where anyone can see the real-time status. By showing when bins are full, we aim to help waste collection become more efficient and reduce environmental impact.
+Our team is composed of students with diverse skills, each contributing to a specific part of the project.
 
-Tech Stack
-Hardware: ESP32 Microcontroller, HC-SR04 Ultrasonic Sensor, MQ-4 Gas Sensor
-Embedded: C++ via Arduino IDE
-Backend: Node.js / Python (for API), Firebase Realtime Database
-Frontend: HTML, CSS, JavaScript
-Development: Git & GitHub
-Getting Started
-Follow these instructions to get the project set up on your local machine for development and testing.
+| Name | Role |
+| :--- | :--- |
+| **Yuexin Li** | Hardware Specialist |
+| **Zhongyi Wang** | Hardware Specialist |
+| **Jiayi Hu** | Embedded Systems Lead |
+| **Zihan Ni** | API & Embedded Integration Lead |
+| **Cleon Harada** | Data & Frontend Developer |
+| **Tingyuan Shao** | Data & Frontend Developer |
+| **Junyue Huang** | Frontend Lead |
+| **Zhiheng Liu** | Project Integrator & QA Lead |
+| **Karim Moussa** | Principal Investigator / Supervisor |
 
-Prerequisites
-Git Installed: Make sure you have Git installed on your computer.
-GitHub Account: You must have a GitHub account.
-Collaborator Access: Ensure you have accepted the collaborator invitation for this repository.
-Software:
-Arduino IDE with ESP32 board support.
-Node.js or Python for running the API server locally.
-A modern web browser (e.g., Chrome, Firefox).
-Setup Instructions
-Clone the Repository: Open your terminal or command prompt and clone the project to your local machine.
-Bash
+## Project Overview
 
-git clone https://github.com/YOUR-ORG/iot-waste-management.git
-Navigate to the Directory:
-Bash
+The goal of this project is to develop a simple, smart waste monitoring system using everyday technology. We are building a device that measures how full a bin is and detects methane gas, a harmful byproduct of trash. This information is sent wirelessly to a website, where anyone can see the real-time status. By showing when bins are full, we aim to help waste collection become more efficient and reduce environmental impact.
 
-cd iot-waste-management
-Install Dependencies: Follow the setup instructions in the api/ and frontend/ sub-directories (if applicable).
-Development Workflow
-To ensure our project code stays stable and organized, we will follow a standard professional workflow. All work must be done on a feature branch and merged into develop through a Pull Request.
+## Tech Stack
 
-The Core Idea
-main branch: Contains the stable, working version of our project at the end of each two-week sprint. Never work directly on this branch.
-develop branch: Our main integration branch where all daily work gets merged. Never work directly on this branch either.
-feature branches: Where you do all your work. For every new task, you will create your own "feature" branch.
-The Daily Workflow: Step-by-Step
+This project uses a combination of hardware and software technologies to achieve its goals:
+
+* **Hardware:** ESP32 Microcontroller, HC-SR04 Ultrasonic Sensor, MQ-4 Gas Sensor
+* **Embedded:** The code running on our hardware is written in C++ via the Arduino IDE.
+* **Backend:** The 'brain' of our server-side operations, built with Node.js or Python (for the API) and using Firebase Realtime Database for data storage.
+* **Frontend:** The user-facing website is built with HTML, CSS, and JavaScript.
+* **Development:** We use Git for version control and GitHub for collaboration and code hosting.
+
+***
+
+## Getting Started
+
+This section will guide you through setting up the project on your own computer so you can start developing.
+
+### Prerequisites
+
+Before you begin, please ensure you have the following ready:
+
+* **Git Installed:** Git is the version control system we use to track changes in our code. You can check if it's installed by opening a terminal and typing `git --version`.
+* **GitHub Account:** You need a personal GitHub account to collaborate with the team.
+* **Collaborator Access:** You must accept the invitation sent to your email to gain write access to this repository.
+* **Software:**
+    * **Arduino IDE:** Make sure it has the ESP32 board support package installed. This allows you to write and upload code to our microcontroller.
+    * **Node.js or Python:** Required for running the API server locally.
+    * **A modern web browser:** Such as Google Chrome or Mozilla Firefox for viewing the web interface.
+
+### Setup Instructions
+
+1.  **Clone the Repository:** This command downloads a full copy of the project to your computer. Open your terminal or command prompt and run:
+    ```bash
+    git clone [https://github.com/YOUR-ORG/iot-waste-management.git](https://github.com/YOUR-ORG/iot-waste-management.git)
+    ```
+
+2.  **Navigate to the Directory:** Change your current location in the terminal to the newly created project folder.
+    ```bash
+    cd iot-waste-management
+    ```
+
+3.  **Install Dependencies:** Our project has separate parts (the API and the Frontend). Each part has its own dependencies. Follow the specific setup instructions in the `api/` and `frontend/` sub-directories to install them.
+
+***
+
+## Development Workflow
+
+To ensure we can all work together without creating conflicts or breaking the main codebase, we will follow a standard professional workflow. **All work must be done on a personal `feature` branch and then merged into the `develop` branch through a Pull Request.**
+
+### The Core Idea
+
+Think of our repository as having different levels of stability:
+
+* **`main` branch:** This branch is like a "release" version. It only contains code that is stable and has been fully tested at the end of each two-week sprint. **Never work directly on this branch.**
+* **`develop` branch:** This is our main "work-in-progress" branch. All of our individual work gets combined here. It should work most of the time, but we test our combined features here. **Never work directly on this branch either.**
+* **`feature` branches:** This is your personal workspace. For every new task you start, you will create your own "feature" branch. This allows you to work and make mistakes without affecting anyone else.
+
+### The Daily Workflow: A Step-by-Step Guide
+
 Follow these steps for every new task you are assigned in GitHub Issues.
 
-Step 1: Get the Latest Code
-Before you start any new work, you must update your local develop branch.
+#### Step 1: Get the Latest Code
 
-Switch to your local develop branch:
-Bash
+Before you write a single line of code, you must ensure your local `develop` branch is perfectly in sync with the team's progress on GitHub.
 
-git checkout develop
-Pull the latest changes from GitHub:
-Bash
+1.  Switch to your local `develop` branch:
+    ```bash
+    git checkout develop
+    ```
+2.  Pull the latest changes from GitHub:
+    ```bash
+    git pull origin develop
+    ```
 
-git pull origin develop
-Step 2: Create Your New Task Branch
-Look at the Issues tab on GitHub and find the task assigned to you (e.g., Issue #15).
-From your up-to-date develop branch, create a new branch for your task. Use a clear name that includes the feature and the issue number.
-Bash
+#### Step 2: Create Your New Task Branch
 
-# Example for working on Issue #15, the API endpoints
-git checkout -b feature/api-endpoints-15
-Step 3: Do Your Work (The Code-Commit Loop)
-This is where you write your code and test your work. As you make progress, save it by making small, logical commits.
+1.  Go to the **Issues** tab on GitHub and find the task assigned to you (e.g., Issue #15).
+2.  From your now up-to-date `develop` branch, create a new branch for your task. It's a good practice to name it clearly.
+    ```bash
+    # This command creates a new branch and switches to it in one step.
+    # Example for working on Issue #15, the API endpoints:
+    git checkout -b feature/api-endpoints-15
+    ```
 
-Stage your changes: Add the files you have worked on.
-Bash
+#### Step 3: Do Your Work (The Code-Commit Loop)
 
-git add .
-Commit your changes: Write a clear commit message. Start your message with a keyword like feat:, fix:, or docs: and mention the issue number you are working on.
-Bash
+This is the creative part where you write code and test your feature. As you make progress, save your work in small, logical chunks called "commits."
 
-git commit -m "feat: Implement GET endpoint for sensor data. Closes #15"
-Step 4: Push Your Branch to GitHub
-When you are ready to share your work, push your feature branch to the remote repository.
+1.  **Stage your changes:** After you've saved your files, you need to tell Git which changes you want to include in your next commit.
+    ```bash
+    # This command stages all modified files in the current directory.
+    git add .
+    ```
+2.  **Commit your changes:** Save your staged changes with a clear message explaining what you did.
+    ```bash
+    # A good commit message explains the "what" and "why" of your change.
+    # Using "Closes #15" will automatically link this commit to the issue!
+    git commit -m "feat: Implement GET endpoint for sensor data. Closes #15"
+    ```
 
-Bash
+#### Step 4: Push Your Branch to GitHub
 
-# The '-u' is only needed the very first time you push a new branch
+When you're ready to share your work, push your local feature branch up to the GitHub repository.
+
+```bash
+# The '-u origin' part sets up a tracking connection and is only needed the first time you push a new branch.
 git push -u origin feature/api-endpoints-15
-Step 5: Create a Pull Request (PR)
-A Pull Request is how you ask for your work to be reviewed and merged into the develop branch.
-
-Go to the repository on GitHub. You will usually see a yellow banner with your branch name and a button that says "Compare & pull request". Click it.
-On the "Open a pull request" page:
-Base: develop (This is where you want to merge into).
-Compare: feature/api-endpoints-15 (This is your branch).
-Title: Give your PR a clear title.
-Description: Briefly explain what you did and how to test it. Mention the issue number again (Closes #15).
-Reviewers: On the right-hand side, assign at least one teammate to review your code.
-Click Create pull request.
-Step 6: Code Review, Discussion, and Merging
-Your reviewer will look at your code and may suggest changes.
-If you need to make changes, simply go back to Step 3, make more commits, and git push to the same feature branch. The Pull Request will update automatically.
-Once your reviewer approves your changes, a "Merge pull request" button will be available. Click it.
-Confirm the merge and then click the "Delete branch" button to keep the repository clean.
-Congratulations! Your work is now safely in the develop branch. You are ready to go back to Step 1 for your next task.
