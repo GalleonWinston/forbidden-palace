@@ -54,12 +54,12 @@ Before you begin, please ensure you have the following ready:
 
 1.  **Clone the Repository:** This command downloads a full copy of the project to your computer. Open your terminal or command prompt and run:
     ```bash
-    git clone [https://github.com/YOUR-ORG/iot-waste-management.git](https://github.com/YOUR-ORG/iot-waste-management.git)
+    git clone https://github.com/Karim6684xj/SURF-SE-Intelligent-Waste-System-IoT
     ```
 
 2.  **Navigate to the Directory:** Change your current location in the terminal to the newly created project folder.
     ```bash
-    cd iot-waste-management
+    cd SURF-SE-Intelligent-Waste-System-IoT
     ```
 
 3.  **Install Dependencies:** Our project has separate parts (the API and the Frontend). Each part has its own dependencies. Follow the specific setup instructions in the `api/` and `frontend/` sub-directories to install them.
