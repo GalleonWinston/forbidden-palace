@@ -4,7 +4,7 @@ exports.postMethaneLevel = async (req, res) => {
   try {
     const { methaneLevel } = req.body
     
-    const methaneRef = db.collection('MethaneLevel').doc('percentage')
+    const methaneRef = db.collection('methaneLevel').doc('percentage')
     await methaneRef.set({
       percentage: methaneLevel // Store the value in percentage field
     })
@@ -18,7 +18,7 @@ exports.postMethaneLevel = async (req, res) => {
 
 exports.getMethaneLevel = async (req, res) => {
   try {
-    const methaneRef = db.collection('MethaneLevel').doc('percentage')
+    const methaneRef = db.collection('methaneLevel').doc('percentage')
     const doc = await methaneRef.get()
     
     if (!doc.exists) {
