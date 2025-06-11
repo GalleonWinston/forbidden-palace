@@ -4,7 +4,7 @@ dotenv.config();
 
 
 const apiRoutes = require("./src/routes/apiRoutes")
-const { db } = require('./src/lib/db')
+const { db } = require('./src/library/db')
  
 const app = express()
 const PORT = process.env.PORT;

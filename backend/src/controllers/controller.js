@@ -1,4 +1,4 @@
-const { db } = require("../lib/db")
+const { db } = require("../library/db")
 
 exports.postMethaneLevel = async (req, res) => {
   try {
