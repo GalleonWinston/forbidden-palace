@@ -1,0 +1,26 @@
+{
+  "name": "surf-se-intelligent-waste-system-iot",
+  "version": "1.0.0",
+  "description": "This is the official repository for the XJTLU SURF 2025 project on developing an intelligent waste management system. This system uses an ESP32 microcontroller and sensors to monitor waste levels and gas emissions, sending data to a user-friendly web interface.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Karim6684xj/SURF-SE-Intelligent-Waste-System-IoT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Karim6684xj/SURF-SE-Intelligent-Waste-System-IoT/issues"
+  },
+  "homepage": "https://github.com/Karim6684xj/SURF-SE-Intelligent-Waste-System-IoT#readme",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
