@@ -93,7 +93,14 @@ Before you write a single line of code, you must ensure your local `develop` bra
 2.  Pull the latest changes from GitHub:
     ```bash
     git pull origin develop
-    ```
+
+3. Install dependencies on the root folder /SURF-SE-Intelligent-Waste-System-IoT
+    ```bash
+    npm run install:all
+
+4. run the Node server on th e root folder /SURF-SE-Intelligent-Waste-System-IoT
+    ```bash
+    npm run dev
 
 #### Step 2: Create Your New Task Branch
 
