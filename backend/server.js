@@ -1,5 +1,7 @@
 const express  = require('express')
 const dotenv = require('dotenv')
+const cookieParser = require('cookie-parser')
+
 dotenv.config();
 
 
@@ -10,6 +12,7 @@ const app = express()
 const PORT = process.env.PORT;
 
 app.use(express.json())
+app.use(cookieParser())
 
 app.get("/", (req,res) => {
     res.status(201).json({ message: "hello World"})

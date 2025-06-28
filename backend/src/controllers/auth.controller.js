@@ -105,4 +105,20 @@ const logout = (req, res) => {
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
-module.exports = { signup, login, logout };
+const checkAuth = (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    res.status(200).json({
+      success: true,
+      userId: req.user.userId,
+      message: "User is authenticated",
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { signup, login, logout, checkAuth };
