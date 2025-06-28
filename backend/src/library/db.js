@@ -1,13 +1,14 @@
-const {initializeApp, cert} = require('firebase-admin/app')
+const admin = require("firebase-admin");
 
-const {getFirestore} = require('firebase-admin/firestore')
+const serviceAccount = require("../../express-app-a357f-firebase-adminsdk-fbsvc-1f0e85e0dc.json");
 
-const serviceAccount = require('../../creds.json')
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL:
+    "https://express-app-a357f-default-rtdb.asia-southeast1.firebasedatabase.app/",
+});
 
-initializeApp({
-    credential: cert(serviceAccount)
-})
+const db = admin.database();
 
-const db = getFirestore();
 
 module.exports = { db }

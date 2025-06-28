@@ -3,7 +3,7 @@ const dotenv = require('dotenv')
 dotenv.config();
 
 
-const apiRoutes = require("./src/routes/apiRoutes")
+const authRoutes = require("./src/routes/auth.route")
 const { db } = require('./src/library/db')
  
 const app = express()
@@ -16,7 +16,7 @@ app.get("/", (req,res) => {
 })
 
 
-app.use("/api", apiRoutes)
+app.use("/api/auth", authRoutes)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`)
