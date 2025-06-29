@@ -6,7 +6,8 @@ dotenv.config();
 
 
 const authRoutes = require("./src/routes/auth.route")
-const { db } = require('./src/library/db')
+const esp32Routes = require("./src/routes/esp32.route")
+
  
 const app = express()
 const PORT = process.env.PORT;
@@ -20,6 +21,8 @@ app.get("/", (req,res) => {
 
 
 app.use("/api/auth", authRoutes)
+app.use("/api/esp32", esp32Routes)
+
 
 app.listen(PORT, () => {
     console.log(`Server is running on port: ${PORT}`)
