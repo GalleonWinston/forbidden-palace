@@ -121,4 +121,23 @@ const checkAuth = (req, res) => {
   }
 };
 
-module.exports = { signup, login, logout, checkAuth };
+const getUserProfile = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+    if (!userId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    const snapshot = await db.ref(`users/${userId}`).once("value");
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { name, email } = snapshot.val();
+    res.status(200).json({ success: true, id: userId, name, email });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { signup, login, logout, checkAuth, getUserProfile };
