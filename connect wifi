@@ -1,0 +1,98 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+
+const char* SSID="Nikki的iPhone"
+const char* PASS="Nzh15102318997"
+const String API_URL="http://172.20.10.5:3000/api/data";
+const int GAS_PIN=36;
+const int TRIG_PIN=5;
+const int ECHO_PIN=18;
+const int SEND_INTERVAL=15000;
+
+unsigned long lastSendTime=0;
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(115200);
+  pinMode(GAS_PIN,INPUT);
+  pinMode(TRIG_PIN,OUTPUT);
+  pinMode(ECHO_PIN,INPUT);
+  connectWiFi();
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+    if (WiFi.status() !=WL_CONNECTED){
+    connectWiFi();
+  }
+    if(millis()-lastSendTime>
+  SEND_INTERVAL){
+    sendSensorData(readGasSensor(),readDistance());
+    lastSendTime=millis();
+  }
+    delay(1000);
+ }
+
+void connectWiFi() {
+  Serial.println("Connecting to WiFi...")
+  WiFi.begin(SSID,PASS);
+
+  int attempts=0;
+  while (WiFi.status()!=WL_CONNECTED&& attempt<20){
+    delay(500);
+    Serial.print(".");
+    attempts++;
+  }
+
+  if (WiFi.status()==WL_CONNECTED){
+    Serial.println("\nConnected! IP:"+WiFi.localIP());
+  }else{
+    Serial.println("\nConnection failed");
+    }
+  }
+
+  float readDistance() {
+    int rawValue=analogRead(GAS_PIN);
+    return rawValue * (3.3/4095.0);
+  }
+
+  int readDistance(){
+    digtalWrite(TRIG_PIN,LOW);
+    delayMicroseconds(2);
+    digtalWrite(TRIG_PIN,HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN,LOW);
+
+    long duration=pulseIn(ECHO_PIN,HIGH);
+    return duration*0.034/2;
+  }
+
+  void sendSensorData(float gas,int dist)
+  {
+    if(WiFi.status()!=WL_CONNECTED){
+      Serial.println("Skipping send:WiFi disconnected");
+      return;
+    }
+
+    HTTPClient http;
+    http.begin(API_URL);
+    http.addHeader("Content-Type","application/json");
+
+    DynamicJsonDocument doc(128);
+    doc["gas"]=gas;
+    doc["distance"]=dist;
+
+    String payload;
+    serializeJson(doc,payload);
+
+    Serial.println("Sending data:"+payload);
+    int httpCode = http.POST(payload);
+
+    if (httpCode==HTTP_CODE_OK){
+      Serial.println("Server error:"+String(httpCode));
+    }
+    
+    http.end();
+  }
+
