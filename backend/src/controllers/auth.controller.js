@@ -107,17 +107,10 @@ const logout = (req, res) => {
 
 const checkAuth = (req, res) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ message: "Not authenticated" });
-    }
-
-    res.status(200).json({
-      success: true,
-      userId: req.user.userId,
-      message: "User is authenticated",
-    });
+    res.status(200).json(req.user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log("Error in checkAuth Controller", error.message);
+    res.status(500).json({ message: "Internal server Error" });
   }
 };
 
