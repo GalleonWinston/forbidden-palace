@@ -16,6 +16,12 @@
 const int CONFIG_BUTTON_PIN = 0; // GPIO0 (BOOT button)
 bool config_mode_triggered = false;
 
+#define MAX_READINGS 60  // Store up to 60 readings (1 per minute)
+#define UPDATE_INTERVAL 60000 // 60 seconds (1 minute)
+
+unsigned long lastUpdateTime = 0;
+int readingIndex = 0;
+
 // Create web server on port 80
 WebServer server(80);
 Preferences preferences;
@@ -80,7 +86,7 @@ const char* configPage = R"(
         
         <form action="/save" method="POST">
             <div class="section">
-                <h3>🌐 WiFi Configuration</h3>
+                <h3>WiFi Configuration</h3>
                 <label for="ssid">WiFi Network Name (SSID):</label>
                 <input type="text" id="ssid" name="ssid" placeholder="Enter WiFi SSID" required>
                 
@@ -145,7 +151,7 @@ const char* successPage = R"(
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Starting Sensor System!</h1>
+        <h1>Starting Sensor System!</h1>
         <div class="success">
             <div class="loading"></div><br><br>
             Connecting to WiFi and initializing sensors...<br>
@@ -176,7 +182,7 @@ const char* successPage = R"(
                     }
                     
                     if (data.connected && data.ip && data.firebase_ready) {
-                        document.getElementById('status').innerHTML = `✅ System Ready! Redirecting to http://${data.ip}`;
+                        document.getElementById('status').innerHTML = `System Ready! Redirecting to http://${data.ip}`;
                         setTimeout(() => {
                             window.location.href = `http://${data.ip}`;
                         }, 2000);
@@ -264,7 +270,7 @@ void setup() {
             
             // Enable sensors
             sensors_active = true;
-            Serial.println("🚀 Sensor monitoring started!");
+            Serial.println("Sensor monitoring started!");
             return;
         } else {
             Serial.println("\nFailed to connect to saved WiFi. Starting configuration mode...");
@@ -289,7 +295,7 @@ void initializeFirebase() {
     Firebase.reconnectWiFi(true);
     
     firebase_initialized = true;
-    Serial.println("✅ Firebase initialized!");
+    Serial.println("Firebase initialized!");
 }
 
 void startConnectedWebServer() {
@@ -309,10 +315,10 @@ void startConnectedWebServer() {
         html += "<div class='status connected'><strong>Status:</strong> Online & Monitoring<br>";
         html += "<strong>Network:</strong> " + WiFi.SSID() + "<br>";
         html += "<strong>IP Address:</strong> " + WiFi.localIP().toString() + "<br>";
-        html += "<strong>Firebase:</strong> " + String(firebase_initialized ? "Connected ✅" : "Disconnected ❌") + "</div>";
+        html += "<strong>Firebase:</strong> " + String(firebase_initialized ? "Connected " : "Disconnected ") + "</div>";
         
         // Show device configuration
-        html += "<div class='config-info'><strong>📍 Device Configuration:</strong><br>";
+        html += "<div class='config-info'><strong> Device Configuration:</strong><br>";
         html += "User ID: <strong>" + user_id + "</strong><br>";
         html += "Device ID: <strong>" + device_id + "</strong><br>";
         html += "Firebase Path: <span class='path'>users/" + user_id + "/" + device_id + "/</span></div>";
@@ -322,14 +328,14 @@ void startConnectedWebServer() {
             float distance = readDistance();
             float gasLevel = readMQ4();
             
-            html += "<div class='sensor'><strong>📏 Distance Sensor:</strong><br>" + String(distance, 2) + " cm</div>";
-            html += "<div class='sensor'><strong>💨 Gas Sensor (MQ4):</strong><br>ADC Value: " + String(gasLevel, 0) + "</div>";
+            html += "<div class='sensor'><strong>Distance Sensor:</strong><br>" + String(distance, 2) + " cm</div>";
+            html += "<div class='sensor'><strong>Gas Sensor (MQ4):</strong><br>ADC Value: " + String(gasLevel, 0) + "</div>";
         }
         
-        html += "<a href='/' class='refresh'>🔄 Refresh Data</a>";
-        html += "<a href='/config'>🔧 Reconfigure</a>";
+        html += "<a href='/' class='refresh'>Refresh Data</a>";
+        html += "<a href='/config'> Reconfigure</a>";
         html += "<a href='/restart'>⚡ Restart Device</a>";
-        html += "<br><small>📡 Data updates every 10 seconds to Firebase</small>";
+        html += "<br><small> Data updates every 10 seconds to Firebase</small>";
         html += "</div></body></html>";
         server.send(200, "text/html", html);
     });
@@ -495,6 +501,7 @@ void sendSensorData() {
     
     float distance = readDistance();
     float gasLevel = readMQ4();
+    unsigned long timestamp = millis(); // Or get actual timestamp if preferred
     
     Serial.println("📊 Reading sensors...");
     Serial.print("Distance: ");
@@ -502,36 +509,38 @@ void sendSensorData() {
     Serial.println(" cm");
     Serial.print("Gas Level (ADC): ");
     Serial.println(gasLevel, 0);
+    Serial.print("Timestamp: ");
+    Serial.println(timestamp);
     
-    // Build Firebase path with user_id and device_id
-    String basePath = "users/" + user_id + "/" + "devices/" + device_id + "/";
+    // Build Firebase path
+    String basePath = "users/" + user_id + "/devices/" + device_id + "/readings/";
     
-    // Send distance data
-    if (Firebase.setFloat(firebaseData, basePath + "distance_cm", distance)) {
-        Serial.println("✅ Distance data sent successfully");
+    // Create a JSON object for this reading
+    FirebaseJson reading;
+    reading.set("distance", distance);
+    reading.set("gas", gasLevel);
+    reading.set("timestamp", timestamp);
+    
+    // Push the reading to the array
+    if (Firebase.pushJSON(firebaseData, basePath, reading)) {
+        Serial.println("✅ Data sent successfully");
+        Serial.println("Path: " + firebaseData.pushName());
     } else {
-        Serial.println("❌ Failed to send distance data");
+        Serial.println("❌ Failed to send data");
         Serial.println("Error: " + firebaseData.errorReason());
     }
     
-    // Send gas level data
-    if (Firebase.setFloat(firebaseData, basePath + "gas_level", gasLevel)) {
-        Serial.println("✅ Gas level data sent successfully");
+    // Keep only the last MAX_READINGS entries
+    if (readingIndex >= MAX_READINGS) {
+        String oldestPath = basePath + "0"; // Firebase uses ordered push IDs
+        Firebase.deleteNode(firebaseData, oldestPath);
     } else {
-        Serial.println("❌ Failed to send gas level data");
-        Serial.println("Error: " + firebaseData.errorReason());
+        readingIndex++;
     }
     
-    // Send timestamp
-    if (Firebase.setTimestamp(firebaseData, basePath + "last_update")) {
-        Serial.println("✅ Timestamp updated successfully");
-    } else {
-        Serial.println("❌ Failed to update timestamp");
-    }
-    
-    Serial.println("Firebase Path: " + basePath);
     Serial.println("--------------------");
 }
+
 
 void loop() {
     server.handleClient();
@@ -544,26 +553,22 @@ void loop() {
             Serial.print("New IP address: ");
             Serial.println(WiFi.localIP());
             
-            // Initialize Firebase
             initializeFirebase();
-            
             WiFi.mode(WIFI_STA);
             delay(1000);
             
             server.stop();
             startConnectedWebServer();
-            
             sensors_active = true;
             Serial.println("🚀 Sensor monitoring activated!");
         }
         lastWiFiCheck = millis();
     }
     
-    // Send sensor data every 10 seconds when active
-    static unsigned long lastSensorRead = 0;
-    if (sensors_active && millis() - lastSensorRead > 10000) {
+    // Send sensor data every minute when active
+    if (sensors_active && millis() - lastUpdateTime > UPDATE_INTERVAL) {
         sendSensorData();
-        lastSensorRead = millis();
+        lastUpdateTime = millis();
     }
     
     delay(10);
