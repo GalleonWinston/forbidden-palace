@@ -43,7 +43,6 @@
 .cproject
 .project
 .settings/
-lib/
 lib_ext/
 
 ### VisualStudioCode ###

@@ -1,6 +1,5 @@
 const { db } = require('../library/db');
 const admin = require("firebase-admin");
-const { get } = require('../routes/auth.route');
 
 const createEsp32 = async(req, res) => {
   try {
@@ -34,7 +33,7 @@ const createEsp32 = async(req, res) => {
 const getDeviceReadings = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { deviceId } = req.body; // assuming deviceId is in the URL
+    const { deviceId } = req.body; 
 
     if (!userId || !deviceId) {
       return res.status(400).json({ message: "userId and deviceId are required" });
