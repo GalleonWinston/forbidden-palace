@@ -30,6 +30,34 @@ const createEsp32 = async (req, res) => {
   }
 };
 
+const getDevices = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const snapshot = await db.ref(`users/${userId}/devices`).once("value");
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "No devices found" });
+    }
+
+    const devicesObj = snapshot.val() || {};
+    const devices = Object.entries(devicesObj).map(([id, data]) => ({
+      id,
+      deviceName: data.deviceName,
+      createdAt: data.createdAt,
+    }));
+
+    res.status(200).json(devices);
+  } catch (error) {
+    console.error("Error fetching devices:", error);
+    res.status(500).json({ error: error.message });
+  }
+}
+
 const getDeviceReadings = async (req, res) => {
   try {
     const { deviceId } = req.params;
@@ -59,4 +87,4 @@ const getDeviceReadings = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-module.exports = { createEsp32, getDeviceReadings };
+module.exports = { createEsp32, getDevices, getDeviceReadings };

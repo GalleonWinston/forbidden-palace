@@ -6,7 +6,7 @@ import { useEsp32Store } from "../store/useEsp32Store";
 
 const HomePages = () => {
 
-  const { deviceReading, FetchData, isFetchingData } = useEsp32Store();
+  const { deviceReading, getData, isFetchingData } = useEsp32Store();
 
   const { logout } = useAuthStore();
   return (

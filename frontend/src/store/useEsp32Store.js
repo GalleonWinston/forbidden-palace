@@ -3,20 +3,38 @@ import { axiosInstance } from "../lib/axios";
 import { toast } from "react-hot-toast";
 
 export const useEsp32Store = create((set, get) => ({
-    deviceReading: null,
-    isFetchingData: false,
+    devices: [],
+    data: [],
+    isDataLoading: false,
+    isDevicesLoading: false,
+    selectedDevice: null,
 
-    FetchData: async () => {
-        set({ isFetchingData: true });
+    getDevices: async () => {
+        set({ isDevicesLoading: true });
+        try {
+            const res = await axiosInstance.get("/esp32/devices");
+            set({ devices: res.data });
+        } catch (error) {
+            console.error("Error fetching devices:", error);
+            toast.error("Failed to fetch devices. Please try again.");
+        } finally {
+            set({ isDevicesLoading: false });
+        }
+    },
+
+    getData: async () => {
+        set({ isDataLoading: true });
         try {
             const res = await axiosInstance.get(`/esp32/${deviceId}`);
-            set({ deviceReading: res.data });
+            set({ data: res.data });
             toast.success("Data fetched successfully!");
         } catch (error) {
             console.error("Error fetching data:", error);
             toast.error("Failed to fetch data. Please try again.");
         } finally {
-            set({ isFetchingData: false });
+            set({ isDataLoading: false });
         }
     },
+
+    setSelectedDevice: (selectedDevice) => set({selectedDevice}),
 }))
