@@ -3,7 +3,7 @@ import { useEsp32Store } from '../store/useEsp32Store'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const DataContainer = () => {
-  const { data, isDataLoading } = useEsp32Store();
+  const { data, isDataLoading, selectedDevice, deviceName } = useEsp32Store();
 
   if (isDataLoading) return <div>Loading...</div>;
   if (!data || data.length === 0) return <div>No data found.</div>;
@@ -47,7 +47,7 @@ const DataContainer = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Device Data</h2>
+      <h2 className="text-2xl font-bold mb-6 text-gray-800">{deviceName} data</h2>
       
       {/* Distance Chart */}
       <div className="mb-8">
