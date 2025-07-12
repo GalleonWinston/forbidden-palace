@@ -1,25 +1,27 @@
 import React from "react";
-import { useAuthStore } from "../store/useAuthStore";
-import { LogOut } from "lucide-react";
-
 import { useEsp32Store } from "../store/useEsp32Store";
+
+
+import Navbar from "../components/Navbar";
+import Sidebar from "../components/Sidebar";
+import NoDeviceSelected from "../components/NoDeviceSelected";
+import DataContainer from "../components/DataContainer";
 
 const HomePages = () => {
 
-  const { deviceReading, getData, isFetchingData } = useEsp32Store();
-
-  const { logout } = useAuthStore();
+  const { selectedDevice } = useEsp32Store();
   return (
     <div>
-      <button className="flex gap-2 items-center" onClick={logout}>
-        <LogOut className="size-5" />
-        <span className="hidden sm:inline">Logout</span>
-      </button>
 
-      
+      <div>
+        <Navbar />
+      </div>
+      <div className="flex flex-col sm:flex-row gap-4 p-4">
+        <Sidebar />
+        {!selectedDevice ? <NoDeviceSelected /> : <DataContainer />}
+      </div>
+
     </div>
-
-    
   );
 };
 
