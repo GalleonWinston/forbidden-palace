@@ -3,34 +3,35 @@ import { useEsp32Store } from '../store/useEsp32Store'
 import NoDeviceFound from './NoDeviceFound';
 
 const Sidebar = () => {
-  const { getDevices, devices, isDevicesLoading, setSelectedDevice, getData, setData } = useEsp32Store();
+  const { getDevices, devices, isDevicesLoading, setSelectedDevice, getData, setData, setDeviceName } = useEsp32Store();
 
   useEffect(() => {
     getDevices();
   }, []);
 
-  const handleSelectDevice = (deviceId) => {
+  const handleSelectDevice = (deviceId, deviceName) => {
     setData([]); // Clear previous data
     setSelectedDevice(deviceId);
+    setDeviceName(deviceName);
     getData();
   };
 
   return (
-    <div>
-      <h2 className="text-lg font-bold mb-2">Your Devices</h2>
+    <div className='bg-gray-300'>
+      <h2 className="text-lg font-bold p-2">Your Devices</h2>
       {isDevicesLoading ? (
         <p>Loading devices...</p>
       ) : devices.length === 0 ? (
         <NoDeviceFound />
       ) : (
-        <div className="flex flex-col w-40 gap-4">
+        <div className="flex flex-col">
           {devices.map(device => (
             <button
               key={device.id}
-              className="border p-4 rounded shadow bg-white text-left hover:bg-blue-100 transition-colors"
-              onClick={() => handleSelectDevice(device.id)}
+              className="p-4 rounded shadow bg-gray-200 text-left hover:bg-blue-100 transition-colors"
+              onClick={() => handleSelectDevice(device.id, device.deviceName)}
             >
-              <div><strong>Name:</strong> {device.deviceName}</div>
+              <div>{device.deviceName}</div>
             </button>
           ))}
         </div>

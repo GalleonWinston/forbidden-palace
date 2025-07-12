@@ -8,6 +8,7 @@ export const useEsp32Store = create((set, get) => ({
     isDataLoading: false,
     isDevicesLoading: false,
     selectedDevice: null,
+    deviceName: "",
 
     getDevices: async () => {
         set({ isDevicesLoading: true });
@@ -38,6 +39,8 @@ export const useEsp32Store = create((set, get) => ({
     },
 
     setSelectedDevice: (selectedDevice) => set({selectedDevice}),
+
+    setDeviceName: (deviceName) => set({ deviceName }),
 
     setData: (data) => set({ data }),
 

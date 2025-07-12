@@ -16,7 +16,7 @@ const HomePages = () => {
       <div>
         <Navbar />
       </div>
-      <div className="flex flex-col sm:flex-row gap-4 p-4">
+      <div className="flex flex-col sm:flex-row gap-4">
         <Sidebar />
         {!selectedDevice ? <NoDeviceSelected /> : <DataContainer />}
       </div>
