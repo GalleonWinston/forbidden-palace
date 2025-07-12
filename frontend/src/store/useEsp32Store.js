@@ -25,7 +25,8 @@ export const useEsp32Store = create((set, get) => ({
     getData: async () => {
         set({ isDataLoading: true });
         try {
-            const res = await axiosInstance.get(`/esp32/${deviceId}`);
+            const selectedDevice = get().selectedDevice;
+            const res = await axiosInstance.get(`/esp32/${selectedDevice}`);
             set({ data: res.data });
             toast.success("Data fetched successfully!");
         } catch (error) {
@@ -37,4 +38,8 @@ export const useEsp32Store = create((set, get) => ({
     },
 
     setSelectedDevice: (selectedDevice) => set({selectedDevice}),
+
+    setData: (data) => set({ data }),
+
+    setDevices: (devices) => set({ devices }),
 }))
