@@ -17,7 +17,7 @@ const int CONFIG_BUTTON_PIN = 0; // GPIO0 (BOOT button)
 bool config_mode_triggered = false;
 
 #define MAX_READINGS 60  // Store up to 60 readings (1 per minute)
-#define UPDATE_INTERVAL 60000 // 60 seconds (1 minute)
+#define UPDATE_INTERVAL 300000 // 300 seconds (5 minute)
 
 unsigned long lastUpdateTime = 0;
 int readingIndex = 0;
@@ -385,6 +385,12 @@ void startConfigMode() {
     Serial.println("Configuration web server started");
 }
 
+void attemptWiFiConnection(String ssid, String password) {
+    Serial.println("Attempting to connect to: " + ssid);
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.begin(ssid.c_str(), password.c_str());
+}
+
 void handleRoot() {
     server.send(200, "text/html", configPage);
 }
@@ -418,12 +424,6 @@ void handleSave() {
     } else {
         server.send(400, "text/html", "<h1>Error: All fields are required!</h1><a href='/'>Go Back</a>");
     }
-}
-
-void attemptWiFiConnection(String ssid, String password) {
-    Serial.println("Attempting to connect to: " + ssid);
-    WiFi.mode(WIFI_AP_STA);
-    WiFi.begin(ssid.c_str(), password.c_str());
 }
 
 void handleStatus() {
@@ -497,48 +497,49 @@ float readMQ4() {
 }
 
 void sendSensorData() {
-    if (!firebase_initialized || !sensors_active) return;
-    
-    float distance = readDistance();
-    float gasLevel = readMQ4();
-    unsigned long timestamp = millis(); // Or get actual timestamp if preferred
-    
-    Serial.println("📊 Reading sensors...");
-    Serial.print("Distance: ");
-    Serial.print(distance, 2);
-    Serial.println(" cm");
-    Serial.print("Gas Level (ADC): ");
-    Serial.println(gasLevel, 0);
-    Serial.print("Timestamp: ");
-    Serial.println(timestamp);
-    
-    // Build Firebase path
-    String basePath = "users/" + user_id + "/devices/" + device_id + "/readings/";
-    
-    // Create a JSON object for this reading
-    FirebaseJson reading;
-    reading.set("distance", distance);
-    reading.set("gas", gasLevel);
-    reading.set("timestamp", timestamp);
-    
-    // Push the reading to the array
-    if (Firebase.pushJSON(firebaseData, basePath, reading)) {
-        Serial.println("✅ Data sent successfully");
-        Serial.println("Path: " + firebaseData.pushName());
-    } else {
-        Serial.println("❌ Failed to send data");
-        Serial.println("Error: " + firebaseData.errorReason());
-    }
-    
-    // Keep only the last MAX_READINGS entries
-    if (readingIndex >= MAX_READINGS) {
-        String oldestPath = basePath + "0"; // Firebase uses ordered push IDs
-        Firebase.deleteNode(firebaseData, oldestPath);
-    } else {
-        readingIndex++;
-    }
-    
-    Serial.println("--------------------");
+  if (!firebase_initialized || !sensors_active) return;
+  
+  float distance = readDistance();
+  float gasLevel = readMQ4();
+  
+  Serial.println("📊 Reading sensors...");
+  Serial.print("Distance: ");
+  Serial.print(distance, 2);
+  Serial.println(" cm");
+  Serial.print("Gas Level (ADC): ");
+  Serial.println(gasLevel, 0);
+  
+  // Build Firebase path
+  String basePath = "users/" + user_id + "/devices/" + device_id + "/readings/";
+  
+  // Create a JSON object for this reading
+  FirebaseJson reading;
+  reading.set("distance", distance);
+  reading.set("gas", gasLevel);
+  
+  // Use Firebase server timestamp
+  FirebaseJson timestamp;
+  timestamp.set(".sv", "timestamp");
+  reading.set("timestamp", timestamp);
+  
+  // Push the reading to the array
+  if (Firebase.pushJSON(firebaseData, basePath, reading)) {
+    Serial.println("✅ Data sent successfully");
+    Serial.println("Path: " + firebaseData.pushName());
+  } else {
+    Serial.println("❌ Failed to send data");
+    Serial.println("Error: " + firebaseData.errorReason());
+  }
+  
+  // Keep only the last MAX_READINGS entries
+  if (readingIndex >= MAX_READINGS) {
+    String oldestPath = basePath + "0";
+    Firebase.deleteNode(firebaseData, oldestPath);
+  } else {
+    readingIndex++;
+  }
+  
+  Serial.println("--------------------");
 }
 
 
