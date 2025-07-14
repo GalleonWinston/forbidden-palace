@@ -28,7 +28,7 @@ const Sidebar = () => {
           {devices.map(device => (
             <button
               key={device.id}
-              className="p-4 rounded shadow bg-gray-200 text-left hover:bg-blue-100 transition-colors"
+              className="p-4 rounded shadow bg-gray-200 text-left hover:bg-blue-200 transition-colors"
               onClick={() => handleSelectDevice(device.id, device.deviceName)}
             >
               <div>{device.deviceName}</div>
