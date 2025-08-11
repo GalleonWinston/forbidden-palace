@@ -2,7 +2,7 @@ const express = require('express')
 
 const { protectRoute } = require('../middleware/auth.middleware');
 
-const { signup, login, logout, checkAuth, getUserProfile } = require('../controllers/auth.controller');
+const { signup, login, logout, checkAuth, getUserProfile,  getAllUsers, deleteUser, deleteAllUsers } = require('../controllers/auth.controller');
 
 
 
@@ -18,5 +18,10 @@ router.post('/logout', logout)
 router.get('/check', protectRoute, checkAuth)
 
 router.get('/getUserProfile', protectRoute, getUserProfile)
+
+// Admin routes
+router.get('/getAllUsers', getAllUsers)
+router.post('/deleteUser', deleteUser)
+router.delete('/deleteAllUsers', deleteAllUsers)
 
 module.exports = router;

@@ -26,7 +26,9 @@ const SignUpPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const success = validateForm();
-    if (success === true) signup(formData);
+    if (success === true) {
+      signup({ ...formData, email: formData.email.toLowerCase() });
+    }
   };
 
   return (
