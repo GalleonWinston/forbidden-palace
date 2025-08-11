@@ -9,6 +9,7 @@ export const useAuthStore = create((set, get) => ({
     isSigningUp: false,
     isLoggingIn: false,
     isCheckingAuth: true,
+    userProfile: null,
 
     checkAuth: async () => {
         try {
@@ -58,6 +59,16 @@ export const useAuthStore = create((set, get) => ({
         } catch (error) {
             console.log("Error in Logout:", error);
             toast.error("Logout failed. Please try again.");
+        }
+    },
+
+    getUserProfile: async () => {
+        try {
+            const res = await axiosInstance.get("/auth/getUserProfile");
+            set({ userProfile: res.data });
+        } catch (error) {
+            console.log("Error in Get User Profile:", error);
+            toast.error("Failed to fetch user profile.");
         }
     },
 }))

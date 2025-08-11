@@ -1,22 +1,21 @@
-import React from 'react'
-import { useState } from 'react';
-import { useAuthStore } from '../store/useAuthStore';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff, Loader2, Lock, Mail} from "lucide-react";
-
+import React from "react";
+import { useState } from "react";
+import { useAuthStore } from "../store/useAuthStore";
+import { Link } from "react-router-dom";
+import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 
 const LoginPage = () => {
-    const [ showPassword, setShowPassword ] = useState();
-    const [ formData, setFormData ] = useState({
-        email: "",
-        password: "",
-    })
-    const { login, isLoggingIn } = useAuthStore();
+  const [showPassword, setShowPassword] = useState();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const { login, isLoggingIn } = useAuthStore();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        login(formData)
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    login({ ...formData, email: formData.email.toLowerCase() });
+  };
 
   return (
     <div className="h-screen grid">
@@ -25,8 +24,8 @@ const LoginPage = () => {
         <div className="w-full max-w-md space-y-8">
           {/* Logo */}
           <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
-              <p className="text-gray-500">Sign in to your account</p>
+            <h1 className="text-2xl font-bold mt-2">Welcome Back</h1>
+            <p className="text-gray-500">Sign in to your account</p>
           </div>
 
           {/* Form */}
@@ -42,7 +41,9 @@ const LoginPage = () => {
                   className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="you@example.com"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -58,7 +59,9 @@ const LoginPage = () => {
                   className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="••••••••"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                 />
                 <button
                   type="button"
@@ -101,9 +104,8 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default LoginPage
+export default LoginPage;

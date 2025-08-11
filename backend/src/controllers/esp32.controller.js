@@ -13,7 +13,6 @@ const createEsp32 = async (req, res) => {
 
     // Create a new device reference under the user's devices
     const deviceRef = db.ref(`users/${userId}/devices`).push();
-    const deviceId = deviceRef.key;
 
     await deviceRef.set({
       deviceName,
@@ -87,4 +86,57 @@ const getDeviceReadings = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-module.exports = { createEsp32, getDevices, getDeviceReadings };
+
+const renameDevice = async (req, res) => {
+  try {
+    const { deviceId, newDeviceName } = req.body;
+    const userId = req.user.userId;
+
+    if (!userId || !deviceId || !newDeviceName) {
+      return res
+        .status(400)
+        .json({ message: "userId, deviceId and newDeviceName are required" });
+    }
+
+    const deviceRef = db.ref(`users/${userId}/devices/${deviceId}`);
+    const snapshot = await deviceRef.once("value");
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    await deviceRef.update({ deviceName: newDeviceName });
+
+    res
+      .status(200)
+      .json({ success: true, message: "Device renamed successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const deleteDevice = async (req, res) => {
+  try {
+    const { deviceId } = req.body;
+    const userId = req.user.userId;
+
+    if (!userId || !deviceId) {
+      return res.status(400).json({ message: "userId and deviceId are required" });
+    }
+
+    const deviceRef = db.ref(`users/${userId}/devices/${deviceId}`);
+    const snapshot = await deviceRef.once("value");
+
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    await deviceRef.remove();
+
+    res.status(200).json({ success: true, message: "Device deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { createEsp32, getDevices, getDeviceReadings, renameDevice, deleteDevice };

@@ -133,4 +133,69 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { signup, login, logout, checkAuth, getUserProfile };
+const getAllUsers = async (req, res) => {
+  try {
+    const snapshot = await db.ref("users").once("value");
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    const usersObj = snapshot.val() || {};
+    const users = Object.entries(usersObj).map(([id, data]) => ({
+      id,
+      name: data.name,
+      email: data.email,
+      createdAt: data.createdAt,
+    }));
+
+    res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const { userId } = req.body
+    if (!userId) {
+      return res.status(401).json({ message: "Please enter a userId" });
+    }
+
+    // Remove user from database
+    const snapshot = await db.ref(`users/${userId}`).once("value");
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    
+    await db.ref(`users/${userId}`).remove();
+
+    res.status(200).json({ success: true, message: "User deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+const deleteAllUsers = async (req, res) => {
+  try {
+    const snapshot = await db.ref("users").once("value");
+    if (!snapshot.exists()) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    const usersObj = snapshot.val() || {};
+    const userIds = Object.keys(usersObj);
+
+    // Delete each user
+    for (const userId of userIds) {
+      await db.ref(`users/${userId}`).remove();
+    }
+
+    res.status(200).json({ success: true, message: "All users deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+
+module.exports = { signup, login, logout, checkAuth, getUserProfile, getAllUsers, deleteUser, deleteAllUsers };
