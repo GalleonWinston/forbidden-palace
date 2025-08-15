@@ -3,8 +3,6 @@ const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-const path = require("path");
-
 dotenv.config();
 
 const authRoutes = require("./src/routes/auth.route");
@@ -17,17 +15,10 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
     credentials: true, // Allow cookies to be sent with requests
   })
 );
-
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
-  });
-}
 
 app.get("/", (req, res) => {
   res.status(201).json({ message: "hello World" });
