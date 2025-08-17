@@ -11,13 +11,25 @@
 #define TRIG_PIN 12
 #define ECHO_PIN 14
 #define MQ4_PIN 34
+#define buzzerPin 23
+#define RESET_BUTTON_PIN 4      
+#define LONG_PRESS_DURATION 5000 // 长按5秒触发重置
+#define LED_PIN 2 
+#define LED2_PIN 10              
+
+
+// 添加甲烷报警阈值 (根据实际校准调整)
+#define METHANE_THRESHOLD 2000  // ADC值阈值
+
+unsigned long buttonPressStartTime = 0;
+bool resetTriggered = false;
 
 // Configuration button pin
 const int CONFIG_BUTTON_PIN = 0; // GPIO0 (BOOT button)
 bool config_mode_triggered = false;
 
 #define MAX_READINGS 60  // Store up to 60 readings (1 per minute)
-#define UPDATE_INTERVAL 300000 // 300 seconds (5 minute)
+#define UPDATE_INTERVAL 60000 // 60 seconds (1 minute)
 
 unsigned long lastUpdateTime = 0;
 int readingIndex = 0;
@@ -217,6 +229,13 @@ void setup() {
     pinMode(TRIG_PIN, OUTPUT);
     pinMode(ECHO_PIN, INPUT);
     pinMode(MQ4_PIN, INPUT);
+    pinMode(buzzerPin, OUTPUT);
+    digitalWrite(buzzerPin, LOW);
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, LOW);
+    pinMode(LED2_PIN, OUTPUT);
+    digitalWrite(LED2_PIN, LOW);
+
     Serial.println("Sensors initialized");
     
     // Initialize configuration button
@@ -262,6 +281,7 @@ void setup() {
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP());
             
+            digitalWrite(LED2_PIN, HIGH); // 连接成功，常亮
             // Initialize Firebase
             initializeFirebase();
             
@@ -385,12 +405,6 @@ void startConfigMode() {
     Serial.println("Configuration web server started");
 }
 
-void attemptWiFiConnection(String ssid, String password) {
-    Serial.println("Attempting to connect to: " + ssid);
-    WiFi.mode(WIFI_AP_STA);
-    WiFi.begin(ssid.c_str(), password.c_str());
-}
-
 void handleRoot() {
     server.send(200, "text/html", configPage);
 }
@@ -424,6 +438,12 @@ void handleSave() {
     } else {
         server.send(400, "text/html", "<h1>Error: All fields are required!</h1><a href='/'>Go Back</a>");
     }
+}
+
+void attemptWiFiConnection(String ssid, String password) {
+    Serial.println("Attempting to connect to: " + ssid);
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.begin(ssid.c_str(), password.c_str());
 }
 
 void handleStatus() {
@@ -497,54 +517,123 @@ float readMQ4() {
 }
 
 void sendSensorData() {
-  if (!firebase_initialized || !sensors_active) return;
-  
-  float distance = readDistance();
-  float gasLevel = readMQ4();
-  
-  Serial.println("📊 Reading sensors...");
-  Serial.print("Distance: ");
-  Serial.print(distance, 2);
-  Serial.println(" cm");
-  Serial.print("Gas Level (ADC): ");
-  Serial.println(gasLevel, 0);
-  
-  // Build Firebase path
-  String basePath = "users/" + user_id + "/devices/" + device_id + "/readings/";
-  
-  // Create a JSON object for this reading
-  FirebaseJson reading;
-  reading.set("distance", distance);
-  reading.set("gas", gasLevel);
-  
-  // Use Firebase server timestamp
-  FirebaseJson timestamp;
-  timestamp.set(".sv", "timestamp");
-  reading.set("timestamp", timestamp);
-  
-  // Push the reading to the array
-  if (Firebase.pushJSON(firebaseData, basePath, reading)) {
-    Serial.println("✅ Data sent successfully");
-    Serial.println("Path: " + firebaseData.pushName());
-  } else {
-    Serial.println("❌ Failed to send data");
-    Serial.println("Error: " + firebaseData.errorReason());
-  }
-  
-  // Keep only the last MAX_READINGS entries
-  if (readingIndex >= MAX_READINGS) {
-    String oldestPath = basePath + "0";
-    Firebase.deleteNode(firebaseData, oldestPath);
-  } else {
-    readingIndex++;
-  }
-  
-  Serial.println("--------------------");
+    if (!firebase_initialized || !sensors_active) return;
+    
+    float distance = readDistance();
+    float gasLevel = readMQ4();
+    unsigned long timestamp = millis(); // Or get actual timestamp if preferred
+    
+    Serial.println("📊 Reading sensors...");
+    Serial.print("Distance: ");
+    Serial.print(distance, 2);
+    Serial.println(" cm");
+    Serial.print("Gas Level (ADC): ");
+    Serial.println(gasLevel, 0);
+    Serial.print("Timestamp: ");
+    Serial.println(timestamp);
+    
+    // Build Firebase path
+    String basePath = "users/" + user_id + "/devices/" + device_id + "/readings/";
+    
+    // Create a JSON object for this reading
+    FirebaseJson reading;
+    reading.set("distance", distance);
+    reading.set("gas", gasLevel);
+    reading.set("timestamp", timestamp);
+    
+    // Push the reading to the array
+    if (Firebase.pushJSON(firebaseData, basePath, reading)) {
+        Serial.println("✅ Data sent successfully");
+        Serial.println("Path: " + firebaseData.pushName());
+    } else {
+        Serial.println("❌ Failed to send data");
+        Serial.println("Error: " + firebaseData.errorReason());
+    }
+    
+    // Keep only the last MAX_READINGS entries
+    if (readingIndex >= MAX_READINGS) {
+        String oldestPath = basePath + "0"; // Firebase uses ordered push IDs
+        Firebase.deleteNode(firebaseData, oldestPath);
+    } else {
+        readingIndex++;
+    }
+    
+    Serial.println("--------------------");
+}
+void alarmSequence() {
+    for (int i = 0; i < 3; i++) {
+        digitalWrite(buzzerPin, HIGH);
+        delay(300);
+        digitalWrite(buzzerPin, LOW);
+        delay(200);
+    }
+}
+// 添加重置设备函数
+void resetDevice() {
+    Serial.println("Performing factory reset...");
+    
+    // 清除所有保存的设置
+    preferences.clear();
+    Serial.println("All settings cleared");
+    
+    // 禁用传感器
+    sensors_active = false;
+    
+    // 关闭WiFi
+    WiFi.disconnect(true);
+    delay(1000);
+    
+    // 快速闪烁LED指示重置
+    for (int i = 0; i < 5; i++) {
+        digitalWrite(LED_PIN, HIGH);
+        delay(100);
+        digitalWrite(LED_PIN, LOW);
+        delay(100);
+    }
+    
+    // 重启设备
+    Serial.println("Restarting device...");
+    delay(1000);
+    ESP.restart();
+}
+void checkResetButton() {
+    static bool buttonActive = false;
+    
+    // 按钮被按下
+    if (digitalRead(RESET_BUTTON_PIN) == LOW) {
+        if (!buttonActive) {
+            buttonActive = true;
+            buttonPressStartTime = millis();
+        }   
+        
+        // 检测长按
+        if (millis() - buttonPressStartTime > LONG_PRESS_DURATION && !resetTriggered) {
+            resetTriggered = true;
+            digitalWrite(LED_PIN, LOW); // 长按触发后熄灭
+            
+            // 快速闪烁LED三次作为确认
+            for (int i = 0; i < 3; i++) {
+                digitalWrite(LED_PIN, HIGH);
+                delay(200);
+                digitalWrite(LED_PIN, LOW);
+                delay(200);
+            }
+            
+            resetDevice();
+        }
+    } 
+    // 按钮释放
+    else if (buttonActive) {
+        buttonActive = false;
+        resetTriggered = false;
+    }
 }
 
 
 void loop() {
     server.handleClient();
+    // 检查重置按钮 ✅ 添加调用
+    checkResetButton();
     
     // Check WiFi status and switch modes if needed
     static unsigned long lastWiFiCheck = 0;
@@ -553,7 +642,8 @@ void loop() {
             Serial.println("✅ WiFi connected successfully!");
             Serial.print("New IP address: ");
             Serial.println(WiFi.localIP());
-            
+
+        
             initializeFirebase();
             WiFi.mode(WIFI_STA);
             delay(1000);
@@ -562,6 +652,8 @@ void loop() {
             startConnectedWebServer();
             sensors_active = true;
             Serial.println("🚀 Sensor monitoring activated!");
+
+            digitalWrite(LED2_PIN, HIGH); // 连接成功，常亮
         }
         lastWiFiCheck = millis();
     }
@@ -570,6 +662,22 @@ void loop() {
     if (sensors_active && millis() - lastUpdateTime > UPDATE_INTERVAL) {
         sendSensorData();
         lastUpdateTime = millis();
+    }
+    // 添加：每2秒检查一次甲烷浓度
+    static unsigned long lastGasCheck = 0;
+    if (millis() - lastGasCheck > 2000 && sensors_active) {
+        float gasLevel = readMQ4();
+        
+        // 甲烷浓度检测和报警
+        if (gasLevel > METHANE_THRESHOLD) {
+            // 触发报警模式
+            alarmSequence();
+        } else {
+            // 安全状态关闭蜂鸣器
+            digitalWrite(buzzerPin, LOW);
+        }
+        
+        lastGasCheck = millis();
     }
     
     delay(10);

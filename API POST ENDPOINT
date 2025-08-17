@@ -1,0 +1,45 @@
+void setup() {
+  // put your setup code here, to run once:
+#include<WiFi>
+#include<HTTPClient.h>
+#include<ArduinoJson.h>
+void sendSensorData(float gasVoltage,int distanceCM){
+  DynamicJsonDocument doc(128);
+  float fillPercentage=100.0-((istanceCM/100.0)*100.0);
+  fillPercentage=constrain(fillPercentage,0,100);
+  doc["level"]=fillPercentage;
+  doc["methane"]=gasVoltage*1000;
+  char timestamp[20];
+  snaprintf(timestamp,sizeof(timestamp),"%lu",millis());
+  doc["timestamp"]=timestamp;
+  String payload;
+  serializeJson(doc,payload);
+  HTTPClient http;
+  http.begin("http://172.20.10.5:3000/api/data");
+  hyyp.addHeader("Content-type","application/json");
+  Serial.print("Sending:");
+  Serial.println(payload);
+  int httpCode=http.POST(payload);
+  if
+  (httpCode==HTTP_CODE_OK){
+    String response=http.getString();
+    Serial.print("Server response:");
+    Serial.println(response);
+  }else{
+    Serial.print("HTTP error:");
+    Serial.println(httpCode);
+  }
+  http.end();
+}
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+static unsigned long lastSend=0;
+const long interval=15000;
+if (millis()-lastSend.interval){
+  processSensorData();
+  lastSend=millis();
+}
+delay(100);
+}
