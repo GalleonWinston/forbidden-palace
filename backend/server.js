@@ -1,3 +1,4 @@
+const serverless = require("serverless-http");
 const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
@@ -27,6 +28,12 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/esp32", esp32Routes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}`);
-});
+//  Only run app.listen() when NOT on Vercel
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server is running locally on port: ${PORT}`);
+  });
+}
+
+module.exports = app;
+module.exports.handler = serverless(app);
