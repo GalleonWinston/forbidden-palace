@@ -9,7 +9,7 @@ const authRoutes = require("./src/routes/auth.route");
 const esp32Routes = require("./src/routes/esp32.route");
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser());
