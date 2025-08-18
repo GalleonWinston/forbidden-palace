@@ -98,7 +98,7 @@ const DataContainer = () => {
             <Legend />
             <Line 
               type="monotone" 
-              dataKey="H2SGas" 
+              dataKey="H2Sgas" 
               stroke="#82ca9d" 
               name="H2S Gas Level"
               strokeWidth={2}
@@ -128,7 +128,7 @@ const DataContainer = () => {
             <Legend />
             <Line 
               type="monotone" 
-              dataKey="CH4Gas" 
+              dataKey="CH4gas" 
               stroke="#ffb347" 
               name="CH4 Gas Level"
               strokeWidth={2}
