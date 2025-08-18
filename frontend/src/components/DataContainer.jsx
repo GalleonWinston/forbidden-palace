@@ -68,7 +68,7 @@ const DataContainer = () => {
             <Legend />
             <Line 
               type="monotone" 
-              dataKey="distance" 
+              dataKey="Distance" 
               stroke="#8884d8" 
               name="Distance (cm)"
               strokeWidth={2}
@@ -79,9 +79,9 @@ const DataContainer = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Gas Chart */}
+      {/* H2Gas Chart */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold mb-3 text-gray-700">Gas Sensor</h3>
+        <h3 className="text-lg font-semibold mb-3 text-gray-700">H2S Gas Sensor</h3>
         <ResponsiveContainer width="100%" height={300}>
           <LineChart data={formattedData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -91,18 +91,48 @@ const DataContainer = () => {
               interval="preserveStartEnd"
             />
             <YAxis 
-              label={{ value: 'Gas Level (ADC)', angle: -90, position: 'insideLeft' }}
+              label={{ value: 'H2S Gas Level (ADC)', angle: -90, position: 'insideLeft' }}
               tick={{ fontSize: 12 }}
             />
             <Tooltip content={<CustomTooltip />} />
             <Legend />
             <Line 
               type="monotone" 
-              dataKey="gas" 
+              dataKey="H2SGas" 
               stroke="#82ca9d" 
-              name="Gas Level"
+              name="H2S Gas Level"
               strokeWidth={2}
               dot={{ fill: '#82ca9d', strokeWidth: 2, r: 4 }}
+              activeDot={{ r: 6 }}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {/* CH4Gas Chart */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold mb-3 text-gray-700">CH4 Gas Sensor</h3>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={formattedData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+            <XAxis 
+              dataKey="formattedTime"
+              tick={{ fontSize: 12 }}
+              interval="preserveStartEnd"
+            />
+            <YAxis 
+              label={{ value: 'CH4 Gas Level (ADC)', angle: -90, position: 'insideLeft' }}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Legend />
+            <Line 
+              type="monotone" 
+              dataKey="CH4gas" 
+              stroke="#ffb347" 
+              name="CH4 Gas Level"
+              strokeWidth={2}
+              dot={{ fill: '#ffb347', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6 }}
             />
           </LineChart>
@@ -118,15 +148,17 @@ const DataContainer = () => {
               <tr>
                 <th className="px-4 py-2 text-left text-gray-600">Time</th>
                 <th className="px-4 py-2 text-left text-gray-600">Distance (cm)</th>
-                <th className="px-4 py-2 text-left text-gray-600">Gas Level</th>
+                <th className="px-4 py-2 text-left text-gray-600">H2S Gas Level</th>
+                <th className="px-4 py-2 text-left text-gray-600">CH4 Gas Level</th>
               </tr>
             </thead>
             <tbody>
               {formattedData.slice(-10).reverse().map((item, index) => (
                 <tr key={index} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-2 text-sm">{item.fullDate}</td>
-                  <td className="px-4 py-2 text-sm">{item.distance.toFixed(2)}</td>
-                  <td className="px-4 py-2 text-sm">{item.gas.toFixed(0)}</td>
+                  <td className="px-4 py-2 text-sm">{item.Distance?.toFixed(2) ?? item.distance?.toFixed(2) ?? ''}</td>
+                  <td className="px-4 py-2 text-sm">{item.H2SGas?.toFixed(0) ?? item.H2Sgas?.toFixed(0) ?? ''}</td>
+                  <td className="px-4 py-2 text-sm">{item.CH4Gas?.toFixed(0) ?? item.CH4gas?.toFixed(0) ?? ''}</td>
                 </tr>
               ))}
             </tbody>
