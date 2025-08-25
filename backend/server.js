@@ -28,7 +28,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/esp32", esp32Routes);
 
-//  Only run app.listen() when NOT on Vercel
+//  Only Run app.listen() when NOT on Vercel
 if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => {
     console.log(`Server is running locally on port: ${PORT}`);
