@@ -3,7 +3,7 @@ import { useEsp32Store } from '../store/useEsp32Store'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 
 const DataContainer = () => {
-  const { data, isDataLoading, selectedDevice, deviceName } = useEsp32Store();
+  const { data, isDataLoading, deviceName } = useEsp32Store();
 
   if (isDataLoading) return <div>Loading...</div>;
   if (!data || data.length === 0) return <div>No data found.</div>;
@@ -61,7 +61,7 @@ const DataContainer = () => {
               interval="preserveStartEnd"
             />
             <YAxis 
-              label={{ value: 'Distance (cm)', angle: -90, position: 'insideLeft' }}
+              label={{ value: 'Fill Level', angle: -90, position: 'insideLeft' }}
               tick={{ fontSize: 12 }}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -70,7 +70,7 @@ const DataContainer = () => {
               type="monotone" 
               dataKey="Distance" 
               stroke="#8884d8" 
-              name="Distance (cm)"
+              name="Fill Level"
               strokeWidth={2}
               dot={{ fill: '#8884d8', strokeWidth: 2, r: 4 }}
               activeDot={{ r: 6 }}
@@ -156,9 +156,9 @@ const DataContainer = () => {
               {formattedData.slice(-10).reverse().map((item, index) => (
                 <tr key={index} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-2 text-sm">{item.fullDate}</td>
-                  <td className="px-4 py-2 text-sm">{item.Distance?.toFixed(2) ?? item.distance?.toFixed(2) ?? ''}</td>
-                  <td className="px-4 py-2 text-sm">{item.H2SGas?.toFixed(0) ?? item.H2Sgas?.toFixed(0) ?? ''}</td>
-                  <td className="px-4 py-2 text-sm">{item.CH4Gas?.toFixed(0) ?? item.CH4gas?.toFixed(0) ?? ''}</td>
+                  <td className="px-4 py-2 text-sm">{item.Distance?.toFixed(2) ?? ''}</td>
+                  <td className="px-4 py-2 text-sm">{item.H2Sgas?.toFixed(0) ?? ''}</td>
+                  <td className="px-4 py-2 text-sm">{item.CH4gas?.toFixed(0) ?? ''}</td>
                 </tr>
               ))}
             </tbody>

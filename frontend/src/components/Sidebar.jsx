@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useEsp32Store } from '../store/useEsp32Store'
-import NoDeviceFound from './NoDeviceFound'
-import { Pencil, Trash2 } from 'lucide-react'
+import React, { useEffect, useState } from "react";
+import { useEsp32Store } from "../store/useEsp32Store";
+import NoDeviceFound from "./NoDeviceFound";
+import { Pencil, Trash2 } from "lucide-react";
 
 const Sidebar = () => {
   const {
@@ -15,6 +15,7 @@ const Sidebar = () => {
     createDevice,
     renameDevice,
     deleteDevice,
+    setActivePanel,
   } = useEsp32Store();
 
   const [showForm, setShowForm] = useState(false);
@@ -55,16 +56,29 @@ const Sidebar = () => {
   };
 
   return (
-    <div className='bg-gray-300 p-4'>
+    <div className="bg-gray-300 p-4">
       <h2 className="text-lg font-bold mb-4">Your Devices</h2>
-      <button
-        className="mb-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-        onClick={() => setShowForm(true)}
-      >
-        Add Device
-      </button>
+
+      <div className="flex flex-col gap-2 mb-4">
+        <button
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+          onClick={() => setShowForm(true)}
+        >
+          Add Device
+        </button>
+
+        <button
+          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors"
+          onClick={() => setActivePanel("status")}
+        >
+          Open Status Panel
+        </button>
+      </div>
       {showForm && (
-        <form onSubmit={handleCreateDevice} className="mb-4 flex flex-col gap-2 bg-white p-4 rounded shadow">
+        <form
+          onSubmit={handleCreateDevice}
+          className="mb-4 flex flex-col gap-2 bg-white p-4 rounded shadow"
+        >
           <input
             type="text"
             className="border rounded px-2 py-1"
@@ -96,8 +110,11 @@ const Sidebar = () => {
         <NoDeviceFound />
       ) : (
         <div className="flex flex-col">
-          {devices.map(device => (
-            <div key={device.id} className="p-4 rounded shadow bg-gray-200 mb-2 flex flex-col gap-2">
+          {devices.map((device) => (
+            <div
+              key={device.id}
+              className="p-4 rounded shadow bg-gray-200 mb-2 flex flex-col gap-2"
+            >
               <button
                 className="text-left hover:bg-blue-200 transition-colors rounded px-2 py-1"
                 onClick={() => handleSelectDevice(device.id, device.deviceName)}
@@ -106,9 +123,9 @@ const Sidebar = () => {
                   <span>{device.deviceName}</span>
                 </div>
               </button>
-                <div>
-                  <span>{device.id}</span>
-                </div>
+              <div>
+                <span>{device.id}</span>
+              </div>
               {editingId === device.id ? (
                 <div className="flex gap-2">
                   <input
@@ -164,7 +181,11 @@ const Sidebar = () => {
                       <Trash2 size={20} />
                       Confirm Delete
                     </div>
-                    <p>Are you sure you want to delete <span className="font-semibold">{device.deviceName}</span>?</p>
+                    <p>
+                      Are you sure you want to delete{" "}
+                      <span className="font-semibold">{device.deviceName}</span>
+                      ?
+                    </p>
                     <div className="flex gap-2 justify-end">
                       <button
                         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 flex items-center gap-1"
@@ -188,7 +209,7 @@ const Sidebar = () => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default Sidebar
+export default Sidebar;
