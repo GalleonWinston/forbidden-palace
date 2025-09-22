@@ -26,6 +26,25 @@ const DataContainer = () => {
     })
   }));
 
+  // 🔹 Gas color thresholds
+  const getGasColor = (gas, value) => {
+    if (value == null) return "text-gray-500";
+
+    if (gas === "H2S") {
+      if (value < 10) return "text-green-600 font-semibold";  // Safe
+      if (value < 20) return "text-yellow-600 font-semibold"; // Warning
+      return "text-red-600 font-semibold";                    // Dangerous
+    }
+
+    if (gas === "CH4") {
+      if (value < 1000) return "text-green-600 font-semibold"; // Safe
+      if (value < 10000) return "text-yellow-600 font-semibold"; // Warning
+      return "text-red-600 font-semibold";                      // Dangerous
+    }
+
+    return "text-gray-500";
+  };
+
   // Custom tooltip to show full date/time
   const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
@@ -46,7 +65,7 @@ const DataContainer = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="p-4 pr-8 w-full">
       <h2 className="text-2xl font-bold mb-6 text-gray-800">{deviceName} data</h2>
       
       {/* Distance Chart */}
@@ -79,7 +98,7 @@ const DataContainer = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* H2Gas Chart */}
+      {/* H2S Gas Chart */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-3 text-gray-700">H2S Gas Sensor</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -109,7 +128,7 @@ const DataContainer = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* CH4Gas Chart */}
+      {/* CH4 Gas Chart */}
       <div className="mb-8">
         <h3 className="text-lg font-semibold mb-3 text-gray-700">CH4 Gas Sensor</h3>
         <ResponsiveContainer width="100%" height={300}>
@@ -139,7 +158,7 @@ const DataContainer = () => {
         </ResponsiveContainer>
       </div>
 
-      {/* Data Table */}
+      {/* Data Table with color warnings */}
       <div className="mt-8">
         <h3 className="text-lg font-semibold mb-3 text-gray-700">Recent Readings</h3>
         <div className="overflow-x-auto">
@@ -157,8 +176,12 @@ const DataContainer = () => {
                 <tr key={index} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-2 text-sm">{item.fullDate}</td>
                   <td className="px-4 py-2 text-sm">{item.Distance?.toFixed(2) ?? ''}</td>
-                  <td className="px-4 py-2 text-sm">{item.H2Sgas?.toFixed(0) ?? ''}</td>
-                  <td className="px-4 py-2 text-sm">{item.CH4gas?.toFixed(0) ?? ''}</td>
+                  <td className={`px-4 py-2 text-sm ${getGasColor("H2S", item.H2Sgas)}`}>
+                    {item.H2Sgas?.toFixed(0) ?? ''}
+                  </td>
+                  <td className={`px-4 py-2 text-sm ${getGasColor("CH4", item.CH4gas)}`}>
+                    {item.CH4gas?.toFixed(0) ?? ''}
+                  </td>
                 </tr>
               ))}
             </tbody>

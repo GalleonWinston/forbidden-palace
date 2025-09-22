@@ -56,7 +56,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="bg-gray-300 p-4">
+    <div className="bg-gray-300 p-4 min-h-screen">
       <h2 className="text-lg font-bold mb-4">Your Devices</h2>
 
       <div className="flex flex-col gap-2 mb-4">
