@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useEsp32Store } from "../store/useEsp32Store";
 import NoDeviceFound from "./NoDeviceFound";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Copy } from "lucide-react";
 
 const Sidebar = () => {
   const {
@@ -123,8 +123,19 @@ const Sidebar = () => {
                   <span>{device.deviceName}</span>
                 </div>
               </button>
-              <div>
-                <span>{device.id}</span>
+
+              {/* Device ID with copy button */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs"> {device.id}</span>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(device.id);
+                  }}
+                  className="p-1 bg-white text-blue-600 rounded hover:bg-blue-100 transition-colors shadow"
+                  title="Copy Device ID"
+                >
+                  <Copy size={16} />
+                </button>
               </div>
               {editingId === device.id ? (
                 <div className="flex gap-2">
