@@ -4,23 +4,30 @@ import { useEsp32Store } from "../store/useEsp32Store";
 const StatusPanel = () => {
   const { devices, getDataForDevice, statusReadings, setStatusReadings, isDevicesLoading } = useEsp32Store();
 
-useEffect(() => {
-  if (devices.length > 0) {
-    devices.forEach(async (device) => {
-      const readings = await getDataForDevice(device.id, 1); // correct: "id" is from backend
-      if (readings.length > 0) {
-        setStatusReadings(device.id, readings[0]);
-      }
-    });
-  }
-}, [devices]);
+  // Helper function to decide color
+  const getGasColor = (gas, value) => {
+    if (value == null) return "text-gray-500"; // no reading
+
+    if (gas === "H2S") {
+      if (value < 10) return "text-green-600 font-semibold"; // safe
+      if (value < 20) return "text-yellow-600 font-semibold"; // warning
+      return "text-red-600 font-semibold"; // dangerous
+    }
+
+    if (gas === "CH4") {
+      if (value < 1000) return "text-green-600 font-semibold"; // safe
+      if (value < 2000) return "text-yellow-600 font-semibold"; // warning
+      return "text-red-600 font-semibold"; // dangerous
+    }
+
+    return "text-gray-500";
+  };
 
   useEffect(() => {
     if (devices.length > 0) {
-      // For each device, fetch the latest data
       devices.forEach(async (device) => {
-        const readings = await getDataForDevice(device.id, 1); // fetch only the last 1 reading
-        if (readings && readings.length > 0) {
+        const readings = await getDataForDevice(device.id, 1);
+        if (readings.length > 0) {
           setStatusReadings(device.id, readings[0]);
         }
       });
@@ -63,8 +70,16 @@ useEffect(() => {
                   <td className="px-4 py-2 text-sm font-semibold">{device.deviceName}</td>
                   <td className="px-4 py-2 text-sm">{formattedTime}</td>
                   <td className="px-4 py-2 text-sm">{reading.Distance?.toFixed(2) ?? ""}</td>
-                  <td className="px-4 py-2 text-sm">{reading.H2Sgas?.toFixed(0) ?? ""}</td>
-                  <td className="px-4 py-2 text-sm">{reading.CH4gas?.toFixed(0) ?? ""}</td>
+                  <td
+                    className={`px-4 py-2 text-sm ${getGasColor("H2S", reading.H2Sgas)}`}
+                  >
+                    {reading.H2Sgas?.toFixed(0) ?? ""}
+                  </td>
+                  <td
+                    className={`px-4 py-2 text-sm ${getGasColor("CH4", reading.CH4gas)}`}
+                  >
+                    {reading.CH4gas?.toFixed(0) ?? ""}
+                  </td>
                 </tr>
               );
             })}

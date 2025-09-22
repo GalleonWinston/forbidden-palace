@@ -91,7 +91,7 @@ const DataContainer = () => {
               interval="preserveStartEnd"
             />
             <YAxis 
-              label={{ value: 'H2S Gas Level (ADC)', angle: -90, position: 'insideLeft' }}
+              label={{ value: 'H2S Gas Level', angle: -90, position: 'insideLeft' }}
               tick={{ fontSize: 12 }}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -121,7 +121,7 @@ const DataContainer = () => {
               interval="preserveStartEnd"
             />
             <YAxis 
-              label={{ value: 'CH4 Gas Level (ADC)', angle: -90, position: 'insideLeft' }}
+              label={{ value: 'CH4 Gas Level', angle: -90, position: 'insideLeft' }}
               tick={{ fontSize: 12 }}
             />
             <Tooltip content={<CustomTooltip />} />
