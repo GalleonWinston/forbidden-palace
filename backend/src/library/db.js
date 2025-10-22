@@ -17,7 +17,7 @@ const serviceAccount = {
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL:
-    "https://forbidden-palace-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    process.env.FIREBASE_DATABASE_URL,
 });
 
 const db = admin.database();
