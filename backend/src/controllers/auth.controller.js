@@ -96,12 +96,16 @@ const login = async (req, res) => {
 };
 
 const logout = (req, res) => {
+  const isProduction = process.env.NODE_ENV === "production";
+  
   res.cookie("jwt", "", {
     maxAge: 0,
     httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV !== "development",
+    sameSite: isProduction ? "none" : "lax", // ✅ MATCH login settings
+    secure: isProduction, // ✅ MATCH login settings
+    path: "/",
   });
+  
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
